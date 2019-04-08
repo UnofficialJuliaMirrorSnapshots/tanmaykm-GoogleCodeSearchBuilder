@@ -1,0 +1,39 @@
+language: julia
+os:
+  - linux
+julia:
+  - 1.0
+notifications:
+  email: false
+git:
+  depth: 99999999
+cache:
+  timeout: 1000
+  directories:
+    - downloads
+env:
+  global:
+    - BINARYBUILDER_DOWNLOADS_CACHE=downloads
+    - BINARYBUILDER_AUTOMATIC_APPLE=false
+sudo: required
+
+# Before anything else, get the latest versions of things
+before_script:
+  - julia -e 'using Pkg; pkg"add BinaryProvider"; pkg"add BinaryBuilder#master"; Pkg.build()'
+
+script:
+  - julia build_tarballs.jl
+
+
+deploy:
+    provider: releases
+    api_key:
+        # Note; this api_key is only valid for tanmaykm/GoogleCodeSearchBuilder; you need
+        # to make your own: https://docs.travis-ci.com/user/deployment/releases/
+        secure: k36QsBaN+YIQi13HU7CRyu4BCsN1HdWKqybxcOPycCvn4Th95mQgkbWJBW3J3ICKxGrI5YxoMe3GKynHBR+vk2yz3XESn6IAV/W8hvohHPXINTVj80AMfLbkekfD8Ymt9Xa8fnq++vpmlFaFeDRF5gTcxHff5VXbLcD6wMfy2cTV04Aw9l7tvC9G4HtjyRQy2hhRVuocvXQFdacC7J8lMVHL2dFobbfPwdfrkC6q2aAzWj+rQ7VOnzyGk3CiUn6cBBCUufo/I+Z9I0qghXKyeA56iQQY/z6bcR3yFKokXGEUY19H4VKAZm6au/ztdYab54ZCzTuACEZJ9XxxMUzfOQ3vUj2hQ3WwSMhYhAJ7VYrML7P7CVDHPLXcJP/c7m0e2YD1O8ZWl3P64C4Nq2697xs7yEuUs/lD1/5AacITXlNFrTwN1q5vEo4rLJC/L2sF6IODEosoZQpL2leABItWpwZEg+577KvaPrPy3tkHxTmZg+GvG0Ccg7ouwc7H9TO7JFUyfn1JbJtJMrcYVgsl7twtDAlL9H5NxNjsQJaqf7mXdF0hjCaBJYtvwfevI5znqNpdmDcDS3wU8D8z8MxH77J9/w15iqG7z4gkOZcnnV6/u0Pes7ZuQKgCcKI5Xm6hdmewKOBkCXVqre+kNMqfiRZpACI3NMdgupot9/9ChlY=
+    file_glob: true
+    file: products/*
+    skip_cleanup: true
+    on:
+        repo: tanmaykm/GoogleCodeSearchBuilder
+        tags: true
